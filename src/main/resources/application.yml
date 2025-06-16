@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ProductService
+    username: ecommerceProduct
+    password: product1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  cloud:
+    discovery:
+      enabled: false
+eureka:
+  client:
+    enabled: false
+server:
+  address: localhost
+  port: 8089
+  servlet:
+    context-path: /product-service
