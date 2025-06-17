@@ -1,21 +1,20 @@
 spring:
   application:
     name: product-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/ProductService
-    username: ecommerceProduct
-    password: product1234
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
+  config:
+    import: configserver:http://localhost:8083/config-server/
   cloud:
-    discovery:
-      enabled: false
-eureka:
-  client:
-    enabled: false
+    config:
+      profile: dev # Profile to fetch from config server
+      name: product-service # Application name (should match the config file prefix)
+      label: master # Git branch to use
+      fail-fast: true
+      retry:
+        initial-interval: 1000
+        max-attempts: 6
+        max-interval: 2000
+        multiplier: 1.1
+
 server:
   address: localhost
   port: 8089
