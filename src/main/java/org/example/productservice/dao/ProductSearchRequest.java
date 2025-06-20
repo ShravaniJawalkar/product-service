@@ -15,7 +15,8 @@ public class ProductSearchRequest {
     @NotNull
     @JsonProperty("category")
     private String category;
-    @NotNull
-    @JsonProperty("price-range")
-    private Double priceRange;
+    @JsonProperty("page")
+    private Integer page = 0;
+    @JsonProperty("size")
+    private Integer size = 10;
 }

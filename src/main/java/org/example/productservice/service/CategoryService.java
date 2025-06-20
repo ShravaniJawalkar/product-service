@@ -4,6 +4,7 @@ package org.example.productservice.service;
 import org.example.productservice.dao.*;
 import org.example.productservice.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -52,10 +53,10 @@ public class CategoryService {
     }
 
     @Transactional
-    public ResponseEntity<String> updateCategory(Long id, String categoryName) {
+    public ResponseEntity<String> updateCategory(Long id, CategoryRequest categoryRequest) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Category not found with id: " + id));
-        category.setCategoryName(categoryName);
+        category.setCategoryName(categoryRequest.getCategoryName());
         categoryRepository.save(category);
         return new ResponseEntity<>("Category updated successfully", HttpStatus.OK);
     }
@@ -81,9 +82,10 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> getAllCategories(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
         List<CategoryResponse> categoryResponses = new ArrayList<>();
-        categoryRepository.findAll().forEach(category -> {
+        categoryRepository.findAll(pageRequest).forEach(category -> {
             CategoryResponse categoryResponse = CategoryResponse.builder()
                     .categoryId(category.getCategoryId())
                     .categoryName(category.getCategoryName())

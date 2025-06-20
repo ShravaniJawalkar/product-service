@@ -5,6 +5,8 @@ import org.example.productservice.dao.*;
 import org.example.productservice.repository.CategoryRepository;
 import org.example.productservice.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -81,17 +83,15 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ResponseEntity<List<ProductResponse>> getAllProducts(ProductSearchRequest productRequest) {
         Category category = categoryRepository.getCategoryByCategoryName(productRequest.getCategory()).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Category not found"));
-        List<Product> products = category.getProducts();
+        PageRequest pageRequest = PageRequest.of(productRequest.getPage(), productRequest.getSize());
+        Page<Product> products = productRepository.findProductsByCategory_CategoryId(category.getCategoryId(), pageRequest);
         if (products.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NO_CONTENT); // Return empty list if no products found
         }
 
         List<ProductResponse> productResponses = new ArrayList<>();
         products.forEach(product -> {
-            if (product.getProductPrice()!= productRequest.getPriceRange()) {
-                return; // Skip products outside the price range
-            }
-            ProductResponse productResponse = ProductResponse.builder()
+                    ProductResponse productResponse = ProductResponse.builder()
                     .productName(product.getProductName())
                     .productDescription(product.getProductDescription())
                     .categoryName(product.getCategory().getCategoryName())
