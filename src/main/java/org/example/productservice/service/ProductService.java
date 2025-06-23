@@ -59,6 +59,9 @@ public class ProductService {
                 product -> {
                     product.setProductName(productRequest.getProductName());
                     product.setProductPrice(productRequest.getPrice());
+                    product.setProductDescription(productRequest.getProductDescription());
+                    product.setProductQuantity(productRequest.getQuantity());
+                    product.setProductStatus(ProductStatus.valueOf(productRequest.getProductStatus()));
                     productRepository.save(product);
                 },
                 () -> {
@@ -91,7 +94,7 @@ public class ProductService {
 
         List<ProductResponse> productResponses = new ArrayList<>();
         products.forEach(product -> {
-                    ProductResponse productResponse = ProductResponse.builder()
+            ProductResponse productResponse = ProductResponse.builder()
                     .productName(product.getProductName())
                     .productDescription(product.getProductDescription())
                     .categoryName(product.getCategory().getCategoryName())
@@ -114,4 +117,39 @@ public class ProductService {
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<String> updateProductQuantity(long id, int quantity) {
+        int response = productRepository.updateProductQuantity(id, quantity);
+        if (response == 0) {
+            return new ResponseEntity<>("Product not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Product quantity updated successfully", HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<String> updateProductPrice(long id, double price) {
+        int response = productRepository.updateProductPrice(id, price);
+        if (response == 0) {
+            return new ResponseEntity<>("Product not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Product price updated successfully", HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<String> updateProductName(long id, String name) {
+        int response = productRepository.updateProductName(id, name);
+        if (response == 0) {
+            return new ResponseEntity<>("Product not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Product name updated successfully", HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<String> updateProductStatus(long id, String status) {
+        int response = productRepository.updateProductStatus(id, ProductStatus.valueOf(status));
+        if (response == 0) {
+            return new ResponseEntity<>("Product not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Product status updated successfully", HttpStatus.OK);
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -42,5 +43,28 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts(@Valid @RequestBody ProductSearchRequest productRequest) {
         return productService.getAllProducts(productRequest);
+    }
+
+    @PatchMapping("/{id}/quantity")
+    public ResponseEntity<String> updateProductQuantity(@PathVariable long id,  @RequestBody Map<String, Object> updates ) {
+        int quantity = (Integer) updates.get("quantity");
+        return productService.updateProductQuantity(id, quantity);
+    }
+
+    @PatchMapping("/{id}/name")
+    public ResponseEntity<String> updateProductName(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        String productName = (String) updates.get("product_name");
+        return productService.updateProductName(id, productName);
+    }
+    @PatchMapping("/{id}/price")
+    public ResponseEntity<String> updateProductPrice(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        double price = (Double) updates.get("price");
+        return productService.updateProductPrice(id, price);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> updateProductStatus(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        String status = (String) updates.get("status");
+        return productService.updateProductStatus(id, status);
     }
 }
