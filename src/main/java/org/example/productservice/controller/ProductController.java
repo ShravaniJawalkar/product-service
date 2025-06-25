@@ -1,9 +1,9 @@
 package org.example.productservice.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.productservice.dao.ProductRequest;
 import org.example.productservice.dao.ProductResponse;
-import org.example.productservice.dao.ProductSearchRequest;
 import org.example.productservice.dao.ProductUpdateRequest;
 import org.example.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +41,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts(@Valid @RequestBody ProductSearchRequest productRequest) {
-        return productService.getAllProducts(productRequest);
+    public ResponseEntity<List<ProductResponse>> getAllProducts(@Valid @NotNull @RequestParam("category") String category,
+                                                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                @RequestParam(value = "size", defaultValue = "10") int size) {
+        return productService.getAllProducts(category, page, size);
     }
 
     @PatchMapping("/{id}/quantity")
-    public ResponseEntity<String> updateProductQuantity(@PathVariable long id,  @RequestBody Map<String, Object> updates ) {
+    public ResponseEntity<String> updateProductQuantity(@PathVariable long id, @RequestBody Map<String, Object> updates) {
         int quantity = (Integer) updates.get("quantity");
         return productService.updateProductQuantity(id, quantity);
     }
@@ -56,6 +58,7 @@ public class ProductController {
         String productName = (String) updates.get("product_name");
         return productService.updateProductName(id, productName);
     }
+
     @PatchMapping("/{id}/price")
     public ResponseEntity<String> updateProductPrice(@PathVariable long id, @RequestBody Map<String, Object> updates) {
         double price = (Double) updates.get("price");

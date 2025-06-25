@@ -84,9 +84,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<List<ProductResponse>> getAllProducts(ProductSearchRequest productRequest) {
-        Category category = categoryRepository.getCategoryByCategoryName(productRequest.getCategory()).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Category not found"));
-        PageRequest pageRequest = PageRequest.of(productRequest.getPage(), productRequest.getSize());
+    public ResponseEntity<List<ProductResponse>> getAllProducts(String categoryName, int page, int size) {
+        Category category = categoryRepository.getCategoryByCategoryName(categoryName).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Category not found"));
+        PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> products = productRepository.findProductsByCategory_CategoryId(category.getCategoryId(), pageRequest);
         if (products.isEmpty()) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NO_CONTENT); // Return empty list if no products found
